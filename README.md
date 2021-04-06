@@ -1,0 +1,2 @@
+# Basic_Second_Hand_Trading_Platform
+商品二手交易平台
