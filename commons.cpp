@@ -1,21 +1,28 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
+#define Name_Min 2
+#define Name_Max 10
+#define Address_Min 2
+#define Address_Max 30
+#define Contact_Len 11
+#define Passwd_Min 6
+#define Passwd_Max 10
+#define Description_Min 2
+#define Description_Max 50
 
 #include "commons.h"
 using namespace std;
 
-void get_str(string output, string& input, string warning, unsigned int min_length, unsigned int max_length)
+void get_str(string output, string& input,bool check(string))
 {
-	cout << output << endl;
-	cin >> input;
-	bool findSpace = false;
-	while (input.length() < min_length || input.length() > max_length || input.find(' ')!=string::npos) {
-		cout << warning << endl;
+	cout << output;
+	getline(cin, input);
+	while (!check(input)) {
+		cout << output;
 		input.clear();
-		cin >> input;
+		getline(cin, input);
 	}
-	cout << endl << "您输入的是：" << input << endl;
-	cout <<  "输入成功。" << endl;
+	//cout << endl << "您输入的是：" << input << endl;
 }
 
 double get_double(string output)
@@ -29,7 +36,9 @@ double get_double(string output)
 	while (!ok) {
 		ok = true;
 		suffix = 0;
-		cin >> str;
+		getline(cin,str);
+		while (str.length() == 0)
+			getline(cin, str);
 		bool foundDot = false;
 		for (auto ch : str) {
 			if (ch == '.' && !foundDot)
@@ -47,10 +56,10 @@ double get_double(string output)
 			if (suffix > 2) {
 				cout << warning << endl;
 				ok = false;
+				break;
 			}
 		}
-		
-		str.erase();
+		str.clear();
 	}
 	stringstream ss(str);
 	ss >> num;
@@ -60,20 +69,24 @@ double get_double(string output)
 int get_num(string output)
 {
 	string str;
-	string warning = "数字格式不正确。请重新输入。";
+	string warning = "数字格式不正确。请重新输入。\n";
 	bool ok = false;
 	int num = 0;
 	cout << output << endl;
 	while (!ok) {
+		str.clear();
 		ok = true;
-		cin >> str;
-		bool foundDot = false;
-		for (auto ch : str) {
-			if (ch < '0' || ch>'9') {
-				cout << warning;
-				ok = false;
-			}
+		getline(cin, str);
+		if (str.length() == 0) {
+			str.clear();
+			getline(cin, str);
 		}
+		for (auto ch : str) 
+			if (ch < '0' || ch>'9'){
+				ok = false;
+				cout << warning;
+				break;
+			}
 	}
 	stringstream ss(str);
 	ss >> num;
@@ -200,3 +213,62 @@ void write_file(mapfile& maps, System_status& status, string where)
 	}
 }
 
+bool Name_Check(string name)
+{
+	if (name.length() < Name_Min || name.length() > Name_Max)
+		return false;
+	if (name.find(' ') != string::npos)
+		return false;
+	return true;
+}
+
+bool Address_Check(string address)
+{
+	if (address.length() < Address_Min || address.length() > Address_Max)
+		return false;
+	if (address.find(' ')!=string::npos)
+		return false;
+	return true;
+}
+
+bool Contact_Check(string contact)
+{
+	if (contact.length() != Contact_Len)
+		return false;
+	for (auto ch : contact)
+		if (ch < '0' || ch>'9')
+			return false;
+	return true;
+}
+
+bool Passwd_Check(string passwd)
+{
+	bool ret = true;
+	if (passwd.length() < Passwd_Min || passwd.length() > Passwd_Max)
+		return false;
+	for (auto ch : passwd)
+		if ((ch < '0' || ch>'9') && (ch < 'A' || ch>'z'))
+			return  false;
+	return true;
+}
+
+bool Description_Check(string descri)
+{
+	if (descri.length() < Description_Min || descri.length() > Description_Max)
+		return false;
+	return true;
+}
+
+bool Product_N_Check(string N)
+{
+	if (N.length() < 2 || N.length() > 10)
+		return false;
+	if (N.find(' ') != string::npos)
+		return false;
+	return true;
+}
+
+bool Defalt_check(string str)
+{
+	return true;
+}

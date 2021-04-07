@@ -57,7 +57,7 @@ struct System_status {
 	User* usr;
 };
 
-void get_str(string output, string& input, string warning, unsigned int min_length, unsigned int max_length);
+void get_str(string output, string& input, bool check(string));
 
 double get_double(string output);
 
@@ -66,3 +66,17 @@ int get_num(string output);
 void read_file_ini(mapfile& maps, System_status& state);
 
 void write_file(mapfile& maps, System_status& status, string where);
+
+bool Name_Check(string name);
+
+bool Address_Check(string address);
+
+bool Contact_Check(string contact);
+
+bool Passwd_Check(string passwd);
+
+bool Description_Check(string descri);
+
+bool Product_N_Check(string N);
+
+bool Defalt_check(string str);

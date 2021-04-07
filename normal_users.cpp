@@ -6,8 +6,7 @@ using namespace std;
 void trade(mapfile& maps, System_status& status)
 {
 	int id;
-	cout << "请输入您购买的商品ID：";
-	cin >> id;
+	id = get_num("请输入您购买的商品ID：");
 	map<int, Product*>::iterator it;
 	it = maps.id2Product.find(id);
 	if (it == maps.id2Product.end()) {
@@ -47,13 +46,12 @@ void trade(mapfile& maps, System_status& status)
 void MODIFY_INFO(mapfile& maps, System_status& status)
 {
 	int move;
-	cout << "请选择修改的属性(1.用户名 2.联系方式 3.地址)：";
-	cin >> move;
+	move = get_num("请选择修改的属性(1.用户名 2.联系方式 3.地址)：");
 	if (move == 1) {
 		cout << "请输入用户名,输入原本的用户名来取消：";
 		string str;
 		getline(cin, str);
-		get_str("请输入用户名,输入原本的用户名来取消：", str,"用户名应当在2-10字符之间。", 2, 10);
+		get_str("请输入用户名,输入原本的用户名来取消：", str,Name_Check);
 		if (str == status.usr->username) {
 			cout << "已取消。" << endl;
 			cout << "\033[31m调试者注意：本部分不确定跳转位置。\033[0m" << endl;
@@ -64,6 +62,7 @@ void MODIFY_INFO(mapfile& maps, System_status& status)
 		}
 		else {
 			status.usr->username = str;
+			write_file(maps, status, "USER_DATA.txt");
 			cout << "修改成功！";
 		}
 		return;
@@ -84,7 +83,7 @@ void show_self(mapfile& maps, System_status& status)
 void Sell_Product(mapfile& maps, System_status& status)
 {
 	Product* prod = new Product;
-	get_str("请输入商品名称：", prod->name, "长度应当在1-20间", 1, 20);
+	get_str("请输入商品名称（1-20字符）：", prod->name, Product_N_Check);
 	prod->price = get_double("请输入商品价格：");
 	cout << "请输入商品描述：";
 	getline(cin, prod->discription);
@@ -117,5 +116,5 @@ void Sell_Product(mapfile& maps, System_status& status)
 
 void Modify_Product(mapfile& maps, System_status& status)
 {
-
+	
 }

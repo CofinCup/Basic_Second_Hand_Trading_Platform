@@ -8,14 +8,13 @@ void Show_MainMenu(mapfile& maps, System_status& status)
 {
 	string large_sep("=====================\n");
 	string short_sep("**********");
-	int move;
+	int move = 0;
 	if (status.level == -1)
 	{
 		cout << large_sep << endl;
 		cout << "1.用户登录 2.用户注册 3.管理员登录 4.退出程序" << endl;
 		cout << large_sep << endl << endl << endl;
-		cout << "输入操作：";
-		cin >> move;
+		move = get_num("输入操作：");
 		if (move == 1)
 			Login(1, maps, status);
 		if (move == 2)
@@ -54,7 +53,7 @@ void Show_MainMenu(mapfile& maps, System_status& status)
 				cout << "1.返回用户主界面 2.查看/修改信息 3.充值" << endl;
 				cout << large_sep;
 				int input;
-				cin >> input;
+				input = get_num("请输入操作：");
 				if (input == 1)
 					return;
 				if (input == 2)
@@ -68,8 +67,7 @@ void Show_MainMenu(mapfile& maps, System_status& status)
 		cout << large_sep;
 		cout << "1.查看商品列表 2.购买商品 3.搜索商品 4.查看历史订单 5.查看商品详细信息 6.返回用户主界面" << endl;
 		cout << large_sep;
-		cout << "输入操作：";
-		cin >> move;
+		move = get_num("输入操作：");
 		switch (move)
 		{
 		case 1: {
@@ -88,22 +86,30 @@ void Show_MainMenu(mapfile& maps, System_status& status)
 			SEE_INFO(maps, status);
 		}
 		case 6: {
-			status.level = 1;
+			status.level = 0;
 			Show_MainMenu(maps, status);
 		}
 		default:
+			cout << "不合法的操作数。" << endl;
 			break;
 		}
 	}
 	else if (status.level == 2) {
-
+		cout << large_sep;
+		cout << "1.发布商品 2.查看发布商品 3.修改商品信息 4.下架商品 5.查看历史订单 6.返回用户主界面" << endl;
+		cout << large_sep;
+		move = get_num("输入操作：");
+		switch (move)
+		{
+		default:
+			break;
+		}
 	}
 	else if (status.level == 3) {
 		cout << large_sep;
 		cout << "1.查看所有商品 2.搜索商品 3.查看所有订单 4.查看所有用户 5.删除用户 6.下架商品 7.注销" << endl;
 		cout << large_sep;
-		cout << "输入操作：";
-		cin >> move;
+		move = get_num("输入操作：");
 		switch (move) {
 		case 1:
 			Show_Products(maps, status);
@@ -125,6 +131,10 @@ void Show_MainMenu(mapfile& maps, System_status& status)
 			break;
 		case 7:
 			Logout(maps, status);
+			break;
+		default:
+			cout << "不合法的操作数。" << endl;
+			break;
 		}
 	}
 }
@@ -133,10 +143,10 @@ void Make_User(mapfile& maps, System_status& status)
 {
 	User* user = new User;
 	user->id = ++status.ulength;
-	get_str( "请输入用户名(10字符以内，中文字符算两个字符)：", user->username,  "用户名应当在2-10字符以内", 2, 10);
-	get_str( "请输入密码(10字符以内)：", user->passwd,  "密码应当在6-10字符以内", 6, 10);
-	get_str( "请输入电话号码(11位)：", user->contact,  "号码应当为11字符", 11, 11);
-	get_str( "请输入地址(30字符以内)：", user->address,  "地址应当在5-30字符以内", 5, 30);
+	get_str( "请输入用户名(2-10字符，不可输入空格)：", user->username,  Name_Check);
+	get_str( "请输入密码(6-10字符，不可输入空格)：", user->passwd,  Passwd_Check);
+	get_str( "请输入电话号码(11位，不可输入空格)：", user->contact,  Contact_Check);
+	get_str( "请输入地址(2-30字符，不可输入空格)：", user->address,  Address_Check);
 	user->balance = 0;
 	Show_Status(maps, status);
 	cout <<  "注册成功！请返回主界面重新登录。";
@@ -197,9 +207,8 @@ void Show_Products(mapfile& maps, System_status& status)
 void Login(int mode, mapfile& maps, System_status& status)
 {
 	if (mode == 1) { //normal user login
-		cout <<  "请输入用户名：";
 		string uname;
-		cin >> uname;
+		get_str("请输入用户名：", uname, Name_Check);
 		map<string, User*>::iterator l_it;
 		l_it = maps.uname2usr.find(uname);
 		if (l_it == maps.uname2usr.end())
@@ -207,8 +216,7 @@ void Login(int mode, mapfile& maps, System_status& status)
 		else {
 			string passwd = l_it->second->passwd;
 			string input_passwd;
-			cout <<  "请输入密码：" << endl;
-			cin >> input_passwd;
+			get_str("请输入密码：", input_passwd, Passwd_Check);
 			if (input_passwd == passwd) {
 				cout <<  "登陆成功！" << endl;
 				status.level = 0;
@@ -225,8 +233,8 @@ void Login(int mode, mapfile& maps, System_status& status)
 		string uname;
 		string passwd;
 		cout <<  "请输入管理员名称与密码:" << endl;
-		cin >> uname;
-		cin >> passwd;
+		get_str("请输入管理员名称：", uname, Defalt_check);
+		get_str("请输入管理员密码：",passwd,Defalt_check);
 		if (uname ==  "admin" && passwd == "123456") {
 			cout <<  "登陆成功！" << endl;
 			status.level = 3;
@@ -249,15 +257,15 @@ void Logout(mapfile& maps, System_status& state)
 	cout <<  "正在返回主菜单……" << endl;
 	Show_MainMenu(maps, state);
 }
+
 void SEE_INFO(mapfile& maps, System_status& status)
 {
-	cout << "请输入想要查找的商品ID：";
-	int str;
-	cin >> str;
+	int id;
+	id = get_num("请输入想要查找的商品ID：");
 	map<int, Product*>::iterator it;
-	it = maps.id2Product.find(str);
+	it = maps.id2Product.find(id);
 	if (it == maps.id2Product.end()) {
-		cout << "未找到该商品。请重新输入商品名称：";
+		cout << "未找到该商品。请重新输入商品ID：";
 		search_prod(maps, status);
 	}
 	else if (it->second->status != 1 && status.level != 3) {
@@ -312,7 +320,7 @@ void search_prod(mapfile& maps, System_status& status)
 	cout << "调试者注意：本模块还未完善，只能全部匹配。" << endl;
 	cout << "请输入想要查找的商品名称：";
 	string str;
-	cin >> str;
+	get_str("请输入想要查找的商品名称：",str,Product_N_Check);
 	map<string, Product*>::iterator it;
 	it = maps.name2Product.find(str);
 	if (it == maps.name2Product.end()) {
