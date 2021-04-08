@@ -16,3 +16,5 @@ void trade(mapfile& maps, System_status& status);
 void MODIFY_INFO(mapfile& maps, System_status& status);
 
 void Sell_Product(mapfile& maps, System_status& status);
+
+void Modify_Product(mapfile& maps, System_status& status);

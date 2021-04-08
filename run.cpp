@@ -27,8 +27,6 @@ void run(void)
 	write_file(maps, status, "USER_DATA.txt");
 	while (1) {
 		Show_MainMenu(maps, status);
-		//cout << endl << "bug from run.cpp" << endl;
-		Show_Status(maps, status);
 	}
 	return;
 }

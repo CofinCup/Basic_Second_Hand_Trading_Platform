@@ -6,7 +6,8 @@ using namespace std;
 
 void Show_MainMenu(mapfile& maps, System_status& status)
 {
-	string large_sep("=====================\n");
+	//Show_Status(maps, status);
+	string large_sep("===============================================");
 	string short_sep("**********");
 	int move = 0;
 	if (status.level == -1)
@@ -31,6 +32,10 @@ void Show_MainMenu(mapfile& maps, System_status& status)
 		cout << "1.注销用户 2.我是买家 3.我是卖家 4.个人信息管理" << endl;
 		cout << large_sep << endl;
 		move = get_num("输入操作：");
+		if (status.usr->nuked == true) {
+			cout << "\033[31m用户被ban，请联系管理员。正在登出。\033[0m" << endl;
+			Logout(maps, status);
+		}
 		if (move == 1) {
 			status.level = -1;
 			status.uid = -1;
@@ -64,9 +69,9 @@ void Show_MainMenu(mapfile& maps, System_status& status)
 		}
 	}
 	else if (status.level == 1) {
-		cout << large_sep;
-		cout << "1.查看商品列表 2.购买商品 3.搜索商品 4.查看历史订单 5.查看商品详细信息 6.返回用户主界面" << endl;
-		cout << large_sep;
+		cout << large_sep << endl;
+		cout << "1.查看商品列表 2.购买商品 3.搜索商品 4.查看历史订单 5.查看商品详细信息 6.返回用户主界面"<<endl;
+		cout << large_sep << endl;
 		move = get_num("输入操作：");
 		switch (move)
 		{
@@ -81,34 +86,50 @@ void Show_MainMenu(mapfile& maps, System_status& status)
 		}break;
 		case 4: {
 			Show_Orders(maps, status);
-		}
+		}break;
 		case 5: {
 			SEE_INFO(maps, status);
-		}
+		}break;
 		case 6: {
 			status.level = 0;
 			Show_MainMenu(maps, status);
-		}
+		}break;
 		default:
 			cout << "不合法的操作数。" << endl;
 			break;
 		}
 	}
 	else if (status.level == 2) {
-		cout << large_sep;
-		cout << "1.发布商品 2.查看发布商品 3.修改商品信息 4.下架商品 5.查看历史订单 6.返回用户主界面" << endl;
-		cout << large_sep;
+		cout << large_sep<<endl;
+		cout << "1.发布商品 2.查看发布商品 3.修改商品信息/下架商品 4.查看历史订单 5.返回用户主界面" << endl;
+		cout << large_sep<<endl;
 		move = get_num("输入操作：");
 		switch (move)
 		{
+		case 1:
+			Sell_Product(maps, status);
+			break;
+		case 2:
+			Show_Products(maps, status);
+			break;
+		case 3:
+			Modify_Product(maps, status);
+			break;
+		case 4:
+			Show_Orders(maps, status);
+			break;
+		case 5:
+			status.level = 0;
+			break;
 		default:
+			cout << "不合法的操作数。" << endl;
 			break;
 		}
 	}
 	else if (status.level == 3) {
-		cout << large_sep;
+		cout << large_sep<<endl;
 		cout << "1.查看所有商品 2.搜索商品 3.查看所有订单 4.查看所有用户 5.删除用户 6.下架商品 7.注销" << endl;
-		cout << large_sep;
+		cout << large_sep<<endl;
 		move = get_num("输入操作：");
 		switch (move) {
 		case 1:
@@ -151,8 +172,6 @@ void Make_User(mapfile& maps, System_status& status)
 	Show_Status(maps, status);
 	cout <<  "注册成功！请返回主界面重新登录。";
 	maps.uid2usr.insert(pair<int, User*>(user->id, user));
-	cout << user->username;
-	cout << user->id;
 	//show_users(maps, status);
 	write_file(maps, status, "USER_DATA.txt");
 	//Show_MainMenu(maps, status);
@@ -188,20 +207,31 @@ void Show_Products(mapfile& maps, System_status& status)
 	map<int, Product*>::iterator it, itEnd;
 	it = maps.id2Product.begin();
 	itEnd = maps.id2Product.end();
+	cout << "ID\t名称\t价格\t上架时间\t卖家ID\t商品状态";
 	while (it != itEnd) {
-		string sep = "********************";
-		cout << "ID\t名称\t价格\t上架时间\t卖家ID";
-		if (status.level == 3)
-			cout << "\t商品状态";
+		if (it->second->status != 1 && status.level == 1) {
+			it++;
+			continue;
+		}
+		if (status.level == 2 && it->second->sid != status.uid) {
+			it++;
+			continue;
+		}
 		cout << endl;
 		cout.setf(ios::fixed);
 		cout << setw(5) << setfill('0') << it->second->id << "\t";
 		cout << it->second->name << "\t" << fixed << setprecision(2) <<it->second->price << "\t"\
-			<< it->second->date << "\t" << fixed << setw(5)<<setfill('0')<<it->second->sid << endl;
+			<< it->second->date << "\t" << fixed << setw(5)<<setfill('0')<<it->second->sid;
+		if (it->second->status == 1)
+			cout << "\t\033[32m销售中\033[0m" << endl;
+		else if (it->second->status == 0)
+			cout << "已售出" << endl;
+		else if (it->second->status == -1)
+			cout << "\033[33m已下架\033[0m" << endl;
+		else if (it->second->status == -2)
+			cout << "\033[31m被管理员下架\033[0m" << endl;
 		it++;
 	}
-	cout << "\033[31m调试者注意：本部分不确定跳转位置。\033[0m" << endl;
-	//Show_MainMenu(maps, status);
 }
 
 void Login(int mode, mapfile& maps, System_status& status)
@@ -218,7 +248,7 @@ void Login(int mode, mapfile& maps, System_status& status)
 			string input_passwd;
 			get_str("请输入密码：", input_passwd, Passwd_Check);
 			if (input_passwd == passwd) {
-				cout <<  "登陆成功！" << endl;
+				cout <<  "登录成功！" << endl;
 				status.level = 0;
 				status.uid = l_it->second->id;
 				status.usr = l_it->second;
@@ -232,20 +262,17 @@ void Login(int mode, mapfile& maps, System_status& status)
 	if (mode == 3) {
 		string uname;
 		string passwd;
-		cout <<  "请输入管理员名称与密码:" << endl;
 		get_str("请输入管理员名称：", uname, Defalt_check);
 		get_str("请输入管理员密码：",passwd,Defalt_check);
 		if (uname ==  "admin" && passwd == "123456") {
-			cout <<  "登陆成功！" << endl;
+			cout <<  "登录成功！" << endl;
 			status.level = 3;
 			status.uid = -1;
 		}
 		else {
-			cout <<  "invalid admin login. returning to mainmenu." << endl;
+			cout <<  "登录失败。" << endl;
 		}
 	}
-	Show_Status(maps, status);
-	Show_MainMenu(maps, status);
 }
 
 void Logout(mapfile& maps, System_status& state)
@@ -255,7 +282,6 @@ void Logout(mapfile& maps, System_status& state)
 	state.usr = NULL;
 	cout <<  "登出成功" << endl;
 	cout <<  "正在返回主菜单……" << endl;
-	Show_MainMenu(maps, state);
 }
 
 void SEE_INFO(mapfile& maps, System_status& status)

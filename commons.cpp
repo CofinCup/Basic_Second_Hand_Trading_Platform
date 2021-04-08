@@ -36,6 +36,7 @@ double get_double(string output)
 	while (!ok) {
 		ok = true;
 		suffix = 0;
+		str.clear();
 		getline(cin,str);
 		while (str.length() == 0)
 			getline(cin, str);
@@ -59,9 +60,10 @@ double get_double(string output)
 				break;
 			}
 		}
-		str.clear();
 	}
 	stringstream ss(str);
+	cout << endl << "调试：输入的字符串为" << str << endl;
+
 	ss >> num;
 	return num;
 }
@@ -169,10 +171,10 @@ void write_file(mapfile& maps, System_status& status, string where)
 			it = maps.uid2usr.begin();
 			itEnd = maps.uid2usr.end();
 			while (it != itEnd) {
-				st << setfill('0') << setw(5) << it->second->id<<" ";
-				st << it->second->username << " " << it->second->passwd\
-					<< " " << it->second->contact << " " << it->second->address\
-					<< " " << setiosflags(ios::fixed) << setprecision(2)<< it->second->balance << " " << it->second->nuked << endl;
+				st << setfill('0') << setw(5) << it->second->id<<"\t\t";
+				st << it->second->username << "\t\t" << it->second->passwd\
+					<< "\t\t" << it->second->contact << "\t\t" << it->second->address\
+					<< "\t\t" << setiosflags(ios::fixed) << setprecision(2)<< it->second->balance << "\t\t" << it->second->nuked << endl;
 				++it;
 			}
 			st.close();
@@ -188,8 +190,8 @@ void write_file(mapfile& maps, System_status& status, string where)
 			itEnd = maps.id2Product.end();
 			while (it != itEnd) {
 				st << setfill('0') << setw(5) << it->second->id;
-				st << " " << setiosflags(ios::fixed) << setprecision(2)<< it->second->price << " " << it->second->name << " " << it->second->date\
-					<< " " << it->second->status << " " << it->second->discription;
+				st << "\t\t" << setiosflags(ios::fixed) << setprecision(2)<< it->second->price << "\t\t" << it->second->name << "\t\t" << it->second->date\
+					<< "\t\t" << it->second->status << "\t\t" << it->second->discription;
 				++it;
 			}
 			st.close();
@@ -205,7 +207,7 @@ void write_file(mapfile& maps, System_status& status, string where)
 			itEnd = maps.id2Order.end();
 			while (it != itEnd) {
 				st << setfill('0') << setw(5) << it->second->oid;
-				st << " " << it->second->pid << " " << it->second->price << " " << it->second->date << " " << it->second->sid << " " << it->second->bid;
+				st << "\t\t" << it->second->pid << "\t\t" << it->second->price << "\t\t" << it->second->date << "\t\t" << it->second->sid << "\t\t" << it->second->bid;
 				++it;
 			}
 			st.close();

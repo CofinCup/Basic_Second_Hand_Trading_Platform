@@ -17,7 +17,7 @@ struct User {
 	string contact;
 	string address;//hard(?): saving chinese characters
 	double balance;
-	int nuked;
+	bool nuked;
 };
 
 struct Order {
