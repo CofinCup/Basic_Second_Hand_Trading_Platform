@@ -13,7 +13,7 @@
 #include "commons.h"
 using namespace std;
 
-void get_str(string output, string& input,bool check(string))
+void get_str(string output, string& input, bool check(string))
 {
 	cout << output;
 	getline(cin, input);
@@ -28,7 +28,7 @@ void get_str(string output, string& input,bool check(string))
 double get_double(string output)
 {
 	string str;
-	string warning =  "数字格式不正确。请重新输入。(不支持科学计数法）";
+	string warning = "数字格式不正确。请重新输入。(不支持科学计数法）";
 	bool ok = false;
 	double num = 0;
 	int suffix = 0;
@@ -37,7 +37,7 @@ double get_double(string output)
 		ok = true;
 		suffix = 0;
 		str.clear();
-		getline(cin,str);
+		getline(cin, str);
 		while (str.length() == 0)
 			getline(cin, str);
 		bool foundDot = false;
@@ -62,8 +62,7 @@ double get_double(string output)
 		}
 	}
 	stringstream ss(str);
-	cout << endl << "调试：输入的字符串为" << str << endl;
-
+	//cout << endl << "调试：输入的字符串为" << str << endl;
 	ss >> num;
 	return num;
 }
@@ -83,8 +82,8 @@ int get_num(string output)
 			str.clear();
 			getline(cin, str);
 		}
-		for (auto ch : str) 
-			if (ch < '0' || ch>'9'){
+		for (auto ch : str)
+			if (ch < '0' || ch>'9') {
 				ok = false;
 				cout << warning;
 				break;
@@ -104,7 +103,7 @@ void read_file_ini(mapfile& maps, System_status& state)
 	ifstream ost;
 	ost.open("ORDER_DATA.txt", ios::in);
 	if (!ust.is_open())
-		cout <<  "缺失了用户数据文件。" << endl;
+		cout << "缺失了用户数据文件。" << endl;
 	else {
 		while (!ust.eof()) {
 			string tmp;
@@ -117,33 +116,34 @@ void read_file_ini(mapfile& maps, System_status& state)
 				usr->address >> usr->balance >> usr->nuked;
 			maps.uid2usr.insert(pair<int, User*>(usr->id, usr));
 			maps.uname2usr.insert(pair<string, User*>(usr->username, usr));
-			cout << usr->id << usr->username << endl << usr->passwd << endl << usr->balance << endl<<usr->address;
+			//cout << usr->id << usr->username << endl << usr->passwd << endl << usr->balance << endl<<usr->address;
 			state.ulength++;
 		}
-		cout <<  "用户读入结束，共有" << state.ulength <<  "个。" << endl;
+		cout << "用户读入结束，共有" << state.ulength << "个。" << endl;
 		ust.close();
 	}
 
 	if (!pst.is_open())
-		cout <<  "缺失了商品数据文件。" << endl;
+		cout << "缺失了商品数据文件。" << endl;
 	else {
 		while (!pst.eof()) {
 			string tmp;
 			getline(pst, tmp);
+			if (tmp.length() == 0)
+				break;
 			Product* prdt = new Product;
 			stringstream ss(tmp);
-			ss >> prdt->id >> prdt->name>> prdt->price  >> prdt->date >> prdt->sid>>prdt->status;
+			ss >> prdt->id >> prdt->name >> prdt->price >> prdt->date >> prdt->sid >> prdt->status;
 			getline(ss, prdt->discription);
 			maps.id2Product.insert(pair<int, Product*>(prdt->id, prdt));
-			maps.name2Product.insert(pair<string, Product*>(prdt->name, prdt));
-			cout << prdt->discription << endl;
+			//cout << prdt->discription << endl;
 			state.plength++;
 		}
-		cout <<  "商品读入结束，共有" << state.plength <<  "个。" << endl;
+		cout << "商品读入结束，共有" << state.plength << "个。" << endl;
 	}
 
 	if (!ost.is_open())
-		cout <<  "缺少了订单数据文件。" << endl;
+		cout << "缺少了订单数据文件。" << endl;
 	else {
 		while (!ost.eof()) {
 			string tmp;
@@ -155,8 +155,10 @@ void read_file_ini(mapfile& maps, System_status& state)
 			ss >> odr->oid >> odr->pid >> odr->price >> odr->date >> odr->sid >> odr->bid;
 			state.olength++;
 		}
-		cout <<  "订单数据读入结束，共有" << state.olength <<  "个。" << endl;
+		cout << "订单数据读入结束，共有" << state.olength << "个。" << endl;
 	}
+	cout << endl << endl << "二手交易平台 ver 1.02" << endl << "初始化完成。" << endl << endl << endl;
+	Sleep(1000);
 }
 
 void write_file(mapfile& maps, System_status& status, string where)
@@ -165,16 +167,16 @@ void write_file(mapfile& maps, System_status& status, string where)
 	if (where == "USER_DATA.txt") {
 		st.open(where, ios::out);
 		if (!st)
-			cout << "不能打开。" << endl;
+			cout << "无法打开用户数据文件。" << endl;
 		else {
 			map<int, User*>::iterator it, itEnd;
 			it = maps.uid2usr.begin();
 			itEnd = maps.uid2usr.end();
 			while (it != itEnd) {
-				st << setfill('0') << setw(5) << it->second->id<<"\t\t";
-				st << it->second->username << "\t\t" << it->second->passwd\
-					<< "\t\t" << it->second->contact << "\t\t" << it->second->address\
-					<< "\t\t" << setiosflags(ios::fixed) << setprecision(2)<< it->second->balance << "\t\t" << it->second->nuked << endl;
+				st << setfill('0') << setw(5) << it->second->id;
+				st << setfill(' ') << setw(15) << it->second->username << setw(15) << it->second->passwd\
+					<< setw(15) << it->second->contact << setw(30) << it->second->address\
+					<< setw(10) << setiosflags(ios::fixed) << setprecision(2) << it->second->balance << setw(5) << it->second->nuked << endl;
 				++it;
 			}
 			st.close();
@@ -190,8 +192,10 @@ void write_file(mapfile& maps, System_status& status, string where)
 			itEnd = maps.id2Product.end();
 			while (it != itEnd) {
 				st << setfill('0') << setw(5) << it->second->id;
-				st << "\t\t" << setiosflags(ios::fixed) << setprecision(2)<< it->second->price << "\t\t" << it->second->name << "\t\t" << it->second->date\
-					<< "\t\t" << it->second->status << "\t\t" << it->second->discription;
+				st << setfill(' ') << setw(15) << it->second->name
+					<< setw(10) << setiosflags(ios::fixed) << setprecision(2) << it->second->price\
+					<< setw(15) << it->second->date << setw(5)<<setfill('0') << it->second->sid<<setfill(' ')
+					<< setw(5) << it->second->status << "    " << it->second->discription << endl;
 				++it;
 			}
 			st.close();
@@ -228,7 +232,7 @@ bool Address_Check(string address)
 {
 	if (address.length() < Address_Min || address.length() > Address_Max)
 		return false;
-	if (address.find(' ')!=string::npos)
+	if (address.find(' ') != string::npos)
 		return false;
 	return true;
 }
@@ -273,4 +277,25 @@ bool Product_N_Check(string N)
 bool Defalt_check(string str)
 {
 	return true;
+}
+
+void Press_Enter_to_Continue(void)
+{
+	cout << endl << "按回车以继续……";
+	char input;
+	input = getchar();
+	while (input != '\n')
+		input = getchar();
+}
+
+string getTime()
+{
+	time_t rawtime;
+	struct tm* timeinfo;
+	char buffer[80];
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
+	strftime(buffer, sizeof(buffer), "%Y-%m-%d", timeinfo);
+	string str(buffer);
+	return str;
 }

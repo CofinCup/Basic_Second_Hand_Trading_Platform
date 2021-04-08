@@ -35,4 +35,4 @@ void SEE_INFO(mapfile& maps, System_status& status);
 
 void Show_Orders(mapfile& maps, System_status& status);
 
-void search_prod(mapfile& maps, System_status& status);
+void search_prod_name(mapfile& maps, System_status& status);

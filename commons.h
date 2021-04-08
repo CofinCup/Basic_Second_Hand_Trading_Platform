@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <Windows.h>
 #include <iomanip>
+#include <time.h>
+
 
 using namespace std;
 struct User {
@@ -44,7 +46,6 @@ struct mapfile
 	map<int, User*> uid2usr;
 	map<string, User*> uname2usr;
 	map<int, Product*> id2Product;
-	map<string, Product*> name2Product;
 	map<int, Order*> id2Order;
 };
 
@@ -80,3 +81,7 @@ bool Description_Check(string descri);
 bool Product_N_Check(string N);
 
 bool Defalt_check(string str);
+
+void Press_Enter_to_Continue(void);
+
+string getTime();

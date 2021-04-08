@@ -15,7 +15,6 @@ void run(void)
 	maps.uname2usr = uname2usr;
 	maps.id2Order = id2Order;
 	maps.id2Product = id2Product;
-	maps.name2Product = name2Product;
 	System_status status;
 	status.level = -1;
 	status.olength = 0;
@@ -25,6 +24,8 @@ void run(void)
 	status.usr = NULL;
 	read_file_ini(maps, status);
 	write_file(maps, status, "USER_DATA.txt");
+	cout << "***********欢迎使用本系统！***********" << endl;
+	Sleep(1500);
 	while (1) {
 		Show_MainMenu(maps, status);
 	}

@@ -16,3 +16,5 @@ void show_users(mapfile& maps, System_status& status);
 void delete_user(mapfile& maps, System_status status);
 
 void delete_product(mapfile& maps, System_status& status);
+
+void rivive_product(mapfile& maps, System_status& status);
