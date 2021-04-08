@@ -194,7 +194,7 @@ void write_file(mapfile& maps, System_status& status, string where)
 				st << setfill('0') << setw(5) << it->second->id;
 				st << setfill(' ') << setw(15) << it->second->name
 					<< setw(10) << setiosflags(ios::fixed) << setprecision(2) << it->second->price\
-					<< setw(15) << it->second->date << setw(5)<<setfill('0') << it->second->sid<<setfill(' ')
+					<< setw(15) << it->second->date <<"   "<< setw(5)<<setfill('0')<< it->second->sid << setfill(' ')
 					<< setw(5) << it->second->status << "    " << it->second->discription << endl;
 				++it;
 			}
