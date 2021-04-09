@@ -50,6 +50,7 @@ void Show_MainMenu(mapfile& maps, System_status& status)
 			status.level = 2;
 		if (move == 4) {
 			while (1) {
+				system("cls");
 				cout << large_sep;
 				Show_self(maps, status);
 				cout << "1.返回用户主界面 2.修改信息 3.充值" << endl;
@@ -169,16 +170,21 @@ void Make_User(mapfile& maps, System_status& status)
 	User* user = new User;
 	user->id = ++status.ulength;
 	get_str("请输入用户名(2-10字符，不可输入空格)：", user->username, Name_Check);
-	while (maps.uname2usr.find(user->username) != maps.uname2usr.end())
-		get_str("用户名已存在，请重新输入用户名(2-10字符，不可输入空格)：", user->username, Name_Check);
+	while (maps.uname2usr.find(user->username) != maps.uname2usr.end()) {
+		if (maps.uname2usr[user->username]->nuked == true)
+			get_str("用户名已存在，请重新输入用户名(2-10字符，不可输入空格)：", user->username, Name_Check);
+		else
+			continue;
+	}
 	get_str("请输入密码(6-10字符，不可输入空格)：", user->passwd, Passwd_Check);
 	get_str("请输入电话号码(11位，不可输入空格)：", user->contact, Contact_Check);
 	get_str("请输入地址(2-30字符，不可输入空格)：", user->address, Address_Check);
 	user->balance = 0;
 	user->nuked = false;
-	Show_Status(maps, status);
 	cout << "注册成功！请返回主界面重新登录。";
+	Sleep(1500);
 	maps.uid2usr.insert(pair<int, User*>(user->id, user));
+	maps.uname2usr.insert(pair<string, User*>(user->username, user));
 	//show_users(maps, status);
 	write_file(maps, status, "USER_DATA.txt");
 	//Show_MainMenu(maps, status);
@@ -206,7 +212,6 @@ void Recharge(mapfile& maps, System_status& status)
 {
 	double quota;
 	quota = get_double("请输入充值额度：");
-	cout << status.usr->balance << endl << quota << endl;
 	if (status.usr->balance + quota > 100000) {
 		cout << "不能太贪心！" << endl;
 		return;
@@ -221,7 +226,7 @@ void Show_Products(mapfile& maps, System_status& status)
 	map<int, Product*>::iterator it, itEnd;
 	it = maps.id2Product.begin();
 	itEnd = maps.id2Product.end();
-	cout << "ID\t名称\t价格\t上架时间\t卖家ID\t  商品状态";
+	cout << "ID\t  名称\t价格\t上架时间\t卖家ID\t  商品状态";
 	while (it != itEnd) {
 		if (it->second->status != 1 && status.level == 1) {
 			it++;
@@ -233,11 +238,11 @@ void Show_Products(mapfile& maps, System_status& status)
 		}
 		cout << endl;
 		cout.setf(ios::fixed);
-		cout << setw(5) << setfill('0') << it->second->id << "\t";
-		cout << it->second->name << "\t" << fixed << setprecision(2) << it->second->price << "\t"\
+		cout << setw(5) << setfill('0') << it->second->id;
+		cout << setw(10) << setfill(' ') << it->second->name << "\t" << fixed << setprecision(2) << it->second->price << "\t"\
 			<< it->second->date << "\t" << fixed << setw(5) << setfill('0') << it->second->sid;
 		if (it->second->status == 1)
-			cout << "    \t\033[32m销售中\033[0m" << endl;
+			cout << "    \033[32m销售中\033[0m" << endl;
 		else if (it->second->status == 0)
 			cout << "    已售出" << endl;
 		else if (it->second->status == -1)
@@ -339,13 +344,13 @@ void Show_Orders(mapfile& maps, System_status& status)
 		while (it != itEnd) {
 			if (it->second->bid == status.uid)
 				cout << "【购买】" << " " << setw(5) << setfill('0') << it->second->pid
-				<< " " << it->second->price << " " << it->second->date << " " 
-				<< setw(5) << setfill('0') << it->second->sid << " " << setw(5) 
+				<< " " << it->second->price << " " << it->second->date << " "
+				<< setw(5) << setfill('0') << it->second->sid << " " << setw(5)
 				<< setfill('0') << it->second->bid;
 			else if (it->second->sid == status.uid)
-				cout << "【卖出】" << " " << setw(5) << setfill('0') << it->second->pid 
-				<< " " << it->second->price << " " << it->second->date << " " 
-				<<setw(5) << setfill('0')<<it->second->sid << " " << setw(5) 
+				cout << "【卖出】" << " " << setw(5) << setfill('0') << it->second->pid
+				<< " " << it->second->price << " " << it->second->date << " "
+				<< setw(5) << setfill('0') << it->second->sid << " " << setw(5)
 				<< setfill('0') << it->second->bid;
 			++it;
 		}
@@ -375,24 +380,25 @@ void search_prod_name(mapfile& maps, System_status& status)
 	map<int, Product*>::iterator itEnd;
 	it = maps.id2Product.begin();
 	itEnd = maps.id2Product.end();
-	cout <<setfill(' ')<< "商品ID" << setw(15) << "商品名称" << setw(7) << "商品价格" << setw(15) << "    上架日期"  << "    卖家id" << "    商品状态" << endl;
+	cout << "ID\t  名称\t价格\t上架时间\t卖家ID\t  商品状态";
 	while (it != itEnd) {
-		if (it->second->name.find(str)) {
+		if (it->second->name.find(str) != string::npos) {
 			if (it->second->status != 1 && status.level != 3)
 				continue;
 			else {
-				cout << setfill('0') << setw(5) << it->second->id;
-				cout << setfill(' ') << setw(15) << it->second->name
-					<< setiosflags(ios::fixed) << setprecision(2) << it->second->price\
-					<< setw(15) << it->second->date << setw(5) << it->second->sid;
+				cout << endl;
+				cout.setf(ios::fixed);
+				cout << setw(5) << setfill('0') << it->second->id;
+				cout << setw(10) << setfill(' ') << it->second->name << "\t" << fixed << setprecision(2) << it->second->price << "\t"\
+					<< it->second->date << "\t" << fixed << setw(5) << setfill('0') << it->second->sid;
 				if (it->second->status == 1)
-					cout << "   \t\033[32m销售中\033[0m" << endl;
+					cout << "    \033[32m销售中\033[0m" << endl;
 				else if (it->second->status == 0)
-					cout << "   已售出" << endl;
+					cout << "    已售出" << endl;
 				else if (it->second->status == -1)
-					cout << "   \033[33m已下架\033[0m" << endl;
+					cout << "    \033[33m已下架\033[0m" << endl;
 				else if (it->second->status == -2)
-					cout << "   \033[31m被管理员下架\033[0m" << endl;
+					cout << "    \033[31m被管理员下架\033[0m" << endl;
 			}
 		}
 

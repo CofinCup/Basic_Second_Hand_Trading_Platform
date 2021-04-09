@@ -17,7 +17,7 @@ void get_str(string output, string& input, bool check(string))
 {
 	cout << output;
 	getline(cin, input);
-	while (!check(input)) {
+	while (!check(input) || input.length() == 0) {
 		cout << output;
 		input.clear();
 		getline(cin, input);
@@ -32,7 +32,7 @@ double get_double(string output)
 	bool ok = false;
 	double num = 0;
 	int suffix = 0;
-	cout << output << endl;
+	cout << output << "（数字不大于100000）" << endl;
 	while (!ok) {
 		ok = true;
 		suffix = 0;
@@ -64,6 +64,10 @@ double get_double(string output)
 	stringstream ss(str);
 	//cout << endl << "调试：输入的字符串为" << str << endl;
 	ss >> num;
+	if (num >= 100000) {
+		cout << "金额过大。"<<endl;
+		num = get_double(output);
+	}
 	return num;
 }
 
@@ -78,7 +82,7 @@ int get_num(string output)
 		str.clear();
 		ok = true;
 		getline(cin, str);
-		if (str.length() == 0) {
+		while (str.length() == 0) {
 			str.clear();
 			getline(cin, str);
 		}
@@ -194,7 +198,7 @@ void write_file(mapfile& maps, System_status& status, string where)
 				st << setfill('0') << setw(5) << it->second->id;
 				st << setfill(' ') << setw(15) << it->second->name
 					<< setw(10) << setiosflags(ios::fixed) << setprecision(2) << it->second->price\
-					<< setw(15) << it->second->date <<"   "<< setw(5)<<setfill('0')<< it->second->sid << setfill(' ')
+					<< setw(15) << it->second->date << "   " << setw(5) << setfill('0') << it->second->sid << setfill(' ')
 					<< setw(5) << it->second->status << "    " << it->second->discription << endl;
 				++it;
 			}

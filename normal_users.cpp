@@ -54,12 +54,12 @@ void trade(mapfile& maps, System_status& status)
 			maps.id2Order.insert(pair<int, Order*>(odr->oid, odr));
 			cout << endl << "交易成功！当前余额：" << status.usr->balance << endl;
 			cout << "正在返回主菜单……" << endl;
-			Sleep(1500);
 		}
 		write_file(maps, status, "USER_DATA.txt");
 		write_file(maps, status, "PRODUCT_DATA.txt");
 		write_file(maps, status, "ORDER_DATA.txt");
 	}
+	Sleep(1500);
 }
 
 void MODIFY_INFO(mapfile& maps, System_status& status)

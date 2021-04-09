@@ -35,13 +35,24 @@ void delete_user(mapfile& maps, System_status status)
 	l_it = maps.uid2usr.find(id);
 	if (l_it == maps.uid2usr.end())
 		cout << "该用户不存在。" << endl;
-	else if (l_it->second->nuked == 1)
+	else if (l_it->second->nuked == true)
 		cout << "该用户已被删除。" << endl;
 	else {
 		l_it->second->nuked = 1;
+		map<int, Product*>::iterator it, itEnd;
+		it = maps.id2Product.begin();
+		itEnd = maps.id2Product.end();
+		while (it != itEnd) {
+			if (it->second->sid == l_it->second->id)
+				if (it->second->status == 1)
+					it->second->status = -2;
+			++it;
+		}
 		write_file(maps, status, "USER_DATA.txt");
+		write_file(maps, status, "PRODUCT_DATA.txt");
 		cout << "成功删除该用户。" << endl;
 	}
+	Press_Enter_to_Continue();
 }
 
 void delete_product(mapfile& maps, System_status& status)
@@ -76,6 +87,34 @@ void rivive_product(mapfile& maps, System_status& status)
 		l_it->second->status = -2;
 		write_file(maps, status, "PRODUCT_DATA.txt");
 		cout << "成功恢复该商品。" << endl;
+	}
+	Press_Enter_to_Continue();
+}
+
+void rivive_user(mapfile& maps, System_status& status)
+{
+	int id;
+	id = get_num("请输入要恢复的用户ID：");
+	map<int, User*>::iterator l_it;
+	l_it = maps.uid2usr.find(id);
+	if (l_it == maps.uid2usr.end())
+		cout << "该用户不存在。" << endl;
+	else if (l_it->second->nuked == false)
+		cout << "该用户正常。" << endl;
+	else {
+		l_it->second->nuked = 0;
+		map<int, Product*>::iterator it, itEnd;
+		it = maps.id2Product.begin();
+		itEnd = maps.id2Product.end();
+		while (it != itEnd) {
+			if (it->second->sid == l_it->second->id)
+				if (it->second->status == -2)
+					it->second->status = 1;
+			++it;
+		}
+		write_file(maps, status, "USER_DATA.txt");
+		write_file(maps, status, "PRODUCT_DATA.txt");
+		cout << "成功恢复该用户。" << endl;
 	}
 	Press_Enter_to_Continue();
 }
