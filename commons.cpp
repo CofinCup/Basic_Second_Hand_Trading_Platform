@@ -253,7 +253,7 @@ bool Name_Check(string name)
 
 bool Address_Check(string address)
 {
-	if (address.length() < Address_Min || address.length() > Address_Max)
+	if (address.length() < Address_Min || address.length() > 1000)
 		return false;
 	if (address.find(' ') != string::npos)
 		return false;

@@ -19,7 +19,7 @@ void communication_table(mapfile& maps, System_status& status);
 
 void read_communication_file(mapfile& maps, System_status& status);
 
-void write_talk_file(mapfile& maps, System_status& status);
+void rewrite_talk_file(mapfile& maps, System_status& status);
 
 void communicate(mapfile& maps, System_status& status);
 
@@ -27,7 +27,11 @@ void show_communications(mapfile& maps, System_status& status);
 
 void see_communication_content(mapfile& maps, System_status& status);
 
+void Delete_talk(mapfile& maps, System_status& status);
+
 void follow(mapfile& maps, System_status& status);
+
+void Star_talk(mapfile& maps, System_status& status);
 
 void MyMarkdown_translation(string str);
 
