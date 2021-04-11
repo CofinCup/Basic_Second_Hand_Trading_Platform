@@ -9,6 +9,8 @@
 #define Passwd_Max 10
 #define Description_Min 2
 #define Description_Max 50
+#define Title_Min 2
+#define Title_Max 15 
 
 #include "commons.h"
 using namespace std;
@@ -98,14 +100,28 @@ int get_num(string output)
 	return num;
 }
 
+void database_ini()
+{
+	string databasePath = ".\\database";
+	if (0 != _access(databasePath.c_str(), 0)) {
+		cout << "未找到数据库。正在建立数据库。" << endl;
+		_mkdir(databasePath.c_str());
+	}
+	string commuPath = ".\\database\\communication";
+	if (0 != _access(commuPath.c_str(), 0)) {
+		cout << "没找到communication。" << endl;
+		_mkdir(commuPath.c_str());
+	}
+}
+
 void read_file_ini(mapfile& maps, System_status& state)
 {
 	ifstream ust;
-	ust.open("USER_DATA.txt", ios::in);
+	ust.open(".\\database\\USER_DATA.txt", ios::in);
 	ifstream pst;
-	pst.open("PRODUCT_DATA.txt", ios::in);
+	pst.open(".\\database\\PRODUCT_DATA.txt", ios::in);
 	ifstream ost;
-	ost.open("ORDER_DATA.txt", ios::in);
+	ost.open(".\\database\\ORDER_DATA.txt", ios::in);
 	if (!ust.is_open())
 		cout << "缺失了用户数据文件。" << endl;
 	else {
@@ -161,15 +177,18 @@ void read_file_ini(mapfile& maps, System_status& state)
 		}
 		cout << "订单数据读入结束，共有" << state.olength << "个。" << endl;
 	}
+
 	cout << endl << endl << "二手交易平台 ver 1.02" << endl << "初始化完成。" << endl << endl << endl;
 	Sleep(1000);
 }
 
+
 void write_file(mapfile& maps, System_status& status, string where)
 {
+	string filePath = ".\\database\\";
 	ofstream st;
 	if (where == "USER_DATA.txt") {
-		st.open(where, ios::out);
+		st.open(filePath+where, ios::out);
 		if (!st)
 			cout << "无法打开用户数据文件。" << endl;
 		else {
@@ -187,7 +206,7 @@ void write_file(mapfile& maps, System_status& status, string where)
 		}
 	}
 	if (where == "PRODUCT_DATA.txt") {
-		st.open(where, ios::out);
+		st.open(filePath + where, ios::out);
 		if (!st)
 			cout << where << "不能打开。" << endl;
 		else {
@@ -206,7 +225,7 @@ void write_file(mapfile& maps, System_status& status, string where)
 		}
 	}
 	if (where == "ORDER_DATA.txt") {
-		st.open(where, ios::out);
+		st.open(filePath + where, ios::out);
 		if (!st)
 			cout << where << "不能打开。" << endl;
 		else {
@@ -269,6 +288,15 @@ bool Description_Check(string descri)
 	return true;
 }
 
+bool Title_Check(string title)
+{
+	if (title.length() < Title_Min || title.length() > Title_Max)
+		return false;
+	if (title.find(' ') != string::npos)
+		return false;
+	return true;
+}
+
 bool Product_N_Check(string N)
 {
 	if (N.length() < 2 || N.length() > 10)
@@ -277,6 +305,8 @@ bool Product_N_Check(string N)
 		return false;
 	return true;
 }
+
+
 
 bool Defalt_check(string str)
 {
@@ -292,7 +322,7 @@ void Press_Enter_to_Continue(void)
 		input = getchar();
 }
 
-string getTime()
+string getDate()
 {
 	time_t rawtime;
 	struct tm* timeinfo;

@@ -50,7 +50,7 @@ void trade(mapfile& maps, System_status& status)
 			odr->oid = ++status.olength;
 			odr->price = it->second->price;
 			odr->sid = it->second->sid;
-			odr->date = getTime();
+			odr->date = getDate();
 			maps.id2Order.insert(pair<int, Order*>(odr->oid, odr));
 			cout << endl << "交易成功！当前余额：" << status.usr->balance << endl;
 			cout << "正在返回主菜单……" << endl;
@@ -143,7 +143,7 @@ void Sell_Product(mapfile& maps, System_status& status)
 		getline(cin, prod->discription);
 	}
 	prod->id = ++status.olength;
-	prod->date = getTime();
+	prod->date = getDate();
 	prod->sid = status.uid;
 	prod->status = 1;
 	cout << endl << endl << "请确认商品的信息无误！";

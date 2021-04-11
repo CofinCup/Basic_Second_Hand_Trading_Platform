@@ -30,7 +30,7 @@ void Show_MainMenu(mapfile& maps, System_status& status)
 	}
 	else if (status.level == 0) {//个人主菜单
 		cout << endl << large_sep << endl;
-		cout << "1.注销用户 2.我是买家 3.我是卖家 4.个人信息管理" << endl;
+		cout << "1.注销用户 2.我是买家 3.我是卖家 4.个人信息管理 5.我的信箱" << endl;
 		cout << endl << large_sep << endl;
 		if (status.usr->nuked == true) {
 			cout << "\033[31m用户被ban，请联系管理员。正在登出。\033[0m" << endl;
@@ -44,11 +44,11 @@ void Show_MainMenu(mapfile& maps, System_status& status)
 			status.usr = NULL;
 			cout << "用户已登出，正在返回主菜单..." << endl;
 		}
-		if (move == 2)
+		else if (move == 2)
 			status.level = 1;
-		if (move == 3)
+		else if (move == 3)
 			status.level = 2;
-		if (move == 4) {
+		else if (move == 4) {
 			while (1) {
 				system("cls");
 				cout << large_sep;
@@ -59,13 +59,17 @@ void Show_MainMenu(mapfile& maps, System_status& status)
 				input = get_num("请输入操作：");
 				if (input == 1)
 					return;
-				if (input == 2)
+				else if (input == 2)
 					MODIFY_INFO(maps, status);
-				if (input == 3)
+				else if (input == 3)
 					Recharge(maps, status);
 				else
 					cout << "不合法的操作数。" << endl;
 			}
+		}
+		else if (move == 5) {
+			system("cls");
+			communication_table(maps, status);
 		}
 	}
 	else if (status.level == 1) {
@@ -128,7 +132,7 @@ void Show_MainMenu(mapfile& maps, System_status& status)
 	}
 	else if (status.level == 3) {
 		cout << large_sep << endl;
-		cout << "1.查看所有商品 2.搜索商品 3.查看所有订单 4.查看所有用户 5.删除用户 6.下架商品 7.刷新所有数据文件 8.注销" << endl;
+		cout << "1.查看所有商品 2.搜索商品 3.查看所有订单 4.查看所有用户 5.删除用户 6.下架商品 7.刷新所有数据文件 8.我的信箱 9.注销" << endl;
 		cout << large_sep << endl;
 		move = get_num("输入操作：");
 		switch (move) {
@@ -156,6 +160,9 @@ void Show_MainMenu(mapfile& maps, System_status& status)
 			write_file(maps, status, "ORDER_DATA.txt");
 			break;
 		case 8:
+			system("cls");
+			communication_table(maps, status);
+		case 9:
 			Logout(maps, status);
 			break;
 		default:
@@ -290,7 +297,7 @@ void Login(int mode, mapfile& maps, System_status& status)
 		if (uname == "admin" && passwd == "123456") {
 			cout << "登录成功！" << endl;
 			status.level = 3;
-			status.uid = -1;
+			status.uid = 0;
 		}
 		else {
 			cout << "登录失败。" << endl;

@@ -12,6 +12,7 @@
 #include "commons.h"
 #include "normal_users.h"
 #include "admin.h"
+#include "communication.h"
 
 using namespace std;
 

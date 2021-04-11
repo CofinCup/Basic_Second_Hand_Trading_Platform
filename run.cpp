@@ -11,10 +11,12 @@ void run(void)
 	map<int, Order*> id2Order;
 	map<int, Product*> id2Product;
 	map<string, Product*> name2Product;
+	map<int, Talk*> tid2Talk;
 	maps.uid2usr = uid2usr;
 	maps.uname2usr = uname2usr;
 	maps.id2Order = id2Order;
 	maps.id2Product = id2Product;
+	maps.cur_usr_tid2Talk = tid2Talk;
 	System_status status;
 	status.level = -1;
 	status.olength = 0;
@@ -23,7 +25,7 @@ void run(void)
 	status.uid = 0;
 	status.usr = NULL;
 	read_file_ini(maps, status);
-	write_file(maps, status, "USER_DATA.txt");
+	enable_communication();
 	cout << "***********欢迎使用本系统！***********" << endl;
 	Sleep(1500);
 	while (1) {

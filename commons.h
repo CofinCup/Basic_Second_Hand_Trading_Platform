@@ -9,7 +9,8 @@
 #include <Windows.h>
 #include <iomanip>
 #include <time.h>
-
+#include <direct.h>
+#include <io.h>
 
 using namespace std;
 struct User {
@@ -41,12 +42,22 @@ struct Product {
 	string discription;
 };
 
+struct Talk {
+	int tid;
+	int sid;//sender id;
+	int status;
+	string date;
+	string title;
+	string content;
+};
+
 struct mapfile
 {
 	map<int, User*> uid2usr;
 	map<string, User*> uname2usr;
 	map<int, Product*> id2Product;
 	map<int, Order*> id2Order;
+	map<int, Talk*> cur_usr_tid2Talk;
 };
 
 struct System_status {
@@ -55,8 +66,10 @@ struct System_status {
 	int ulength;//当前用户表长度
 	int plength;//当前商品数量
 	int olength;//当前订单数量
+	int tlength;//邮件数量
 	User* usr;
 };
+
 
 void get_str(string output, string& input, bool check(string));
 
@@ -78,10 +91,12 @@ bool Passwd_Check(string passwd);
 
 bool Description_Check(string descri);
 
+bool Title_Check(string title);
+
 bool Product_N_Check(string N);
 
 bool Defalt_check(string str);
 
 void Press_Enter_to_Continue(void);
 
-string getTime();
+string getDate();
