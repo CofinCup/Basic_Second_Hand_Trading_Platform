@@ -77,6 +77,8 @@ double get_double(string output);
 
 int get_num(string output);
 
+void database_ini();
+
 void read_file_ini(mapfile& maps, System_status& state);
 
 void write_file(mapfile& maps, System_status& status, string where);

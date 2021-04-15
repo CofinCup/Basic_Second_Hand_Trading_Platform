@@ -109,7 +109,6 @@ void database_ini()
 	}
 	string commuPath = ".\\database\\communication";
 	if (0 != _access(commuPath.c_str(), 0)) {
-		cout << "Ã»ÕÒµ½communication¡£" << endl;
 		_mkdir(commuPath.c_str());
 	}
 }
