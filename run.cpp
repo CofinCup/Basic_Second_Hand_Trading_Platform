@@ -25,6 +25,7 @@ void run(void)
 	status.uid = 0;
 	status.usr = NULL;
 	read_file_ini(maps, status);
+	database_ini();
 	enable_communication();
 	cout << "***********欢迎使用本系统！***********" << endl;
 	Sleep(1500);
