@@ -253,7 +253,7 @@ bool Name_Check(string name)
 
 bool Address_Check(string address)
 {
-	if (address.length() < Address_Min || address.length() > 1000)
+	if (address.length() < Address_Min || address.length() > Address_Max)
 		return false;
 	if (address.find(' ') != string::npos)
 		return false;
@@ -306,7 +306,12 @@ bool Product_N_Check(string N)
 	return true;
 }
 
-
+bool Content_Check(string content)
+{
+	if (content.length() < 2 || content.length() > 300)
+		return false;
+	return true;
+}
 
 bool Defalt_check(string str)
 {
@@ -332,4 +337,29 @@ string getDate()
 	strftime(buffer, sizeof(buffer), "%Y-%m-%d", timeinfo);
 	string str(buffer);
 	return str;
+}
+
+int subreplace(string& resource_str, string sub_str, string new_str)
+{
+    int count = 0;
+	string::size_type pos = 0;
+    while((pos = resource_str.find(sub_str)) != string::npos)
+    {
+        resource_str.replace(pos, sub_str.length(), new_str);
+		++count;
+    }
+    return count;
+}
+
+int subreplace_gapped(string& resource_str, string sub_str, string new_str)
+{
+    int count = 0;
+	string::size_type pos = 0;
+    while((pos = resource_str.find(sub_str)) != string::npos)
+    {
+		++count;
+        if (count % 2)
+			resource_str.replace(pos, sub_str.length(), new_str);
+    }
+    return count;
 }

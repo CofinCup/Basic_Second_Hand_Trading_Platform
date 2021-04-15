@@ -95,8 +95,14 @@ bool Title_Check(string title);
 
 bool Product_N_Check(string N);
 
+bool Content_Check(string content);
+
 bool Defalt_check(string str);
 
 void Press_Enter_to_Continue(void);
 
 string getDate();
+
+int subreplace(string& resource_str, string sub_str, string new_str);
+
+int subreplace_gapped(string& resource_str, string sub_str, string new_str);

@@ -29,10 +29,9 @@ void see_communication_content(mapfile& maps, System_status& status);
 
 void Delete_talk(mapfile& maps, System_status& status);
 
-void follow(mapfile& maps, System_status& status);
-
 void Star_talk(mapfile& maps, System_status& status);
 
-void MyMarkdown_translation(string str);
+string MyMarkdown_translation(string str);
 
-//void cart_ini()
+string giveChange(bool isItalic, bool isBold, bool isDelete, bool isUnder);
+

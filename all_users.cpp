@@ -29,9 +29,9 @@ void Show_MainMenu(mapfile& maps, System_status& status)
 		}
 	}
 	else if (status.level == 0) {//个人主菜单
-		cout << endl << large_sep << endl;
+		cout << large_sep << endl;
 		cout << "1.注销用户 2.我是买家 3.我是卖家 4.个人信息管理 5.我的信箱" << endl;
-		cout << endl << large_sep << endl;
+		cout << large_sep << endl;
 		if (status.usr->nuked == true) {
 			cout << "\033[31m用户被ban，请联系管理员。正在登出。\033[0m" << endl;
 			Logout(maps, status);
@@ -39,10 +39,7 @@ void Show_MainMenu(mapfile& maps, System_status& status)
 		}
 		move = get_num("输入操作：");
 		if (move == 1) {
-			status.level = -1;
-			status.uid = -1;
-			status.usr = NULL;
-			cout << "用户已登出，正在返回主菜单..." << endl;
+			Logout(maps, status);
 		}
 		else if (move == 2)
 			status.level = 1;
@@ -162,6 +159,7 @@ void Show_MainMenu(mapfile& maps, System_status& status)
 		case 8:
 			system("cls");
 			communication_table(maps, status);
+			break;
 		case 9:
 			Logout(maps, status);
 			break;

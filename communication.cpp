@@ -35,17 +35,14 @@ void communication_table(mapfile& maps, System_status& status)
 
 void read_communication_file(mapfile& maps, System_status& status)
 {
+	maps.cur_usr_tid2Talk.clear();
 	string path_prefix = ".\\database\\communication\\";
 	string path = "";
 	path = path_prefix + to_string(status.uid) + ".txt";
 	ifstream cst;
 	cst.open(path, ios::in);
 	int idCount = 0;
-	if (!cst.is_open()) {
-		cout << "信箱数据缺失。" << endl;
-		Sleep(1500);
-	}
-	else {
+	{
 		while (!cst.eof()) {
 			++idCount;
 			string tmp;
@@ -96,9 +93,14 @@ void communicate(mapfile& maps, System_status& status)
 		Sleep(1500);
 		return;
 	}
+	else if (id == status.uid) {
+		cout << "不能给自己发信息。" << endl;
+		Sleep(1500);
+		return;
+	}
 	path = path_prefix + to_string(id) + ".txt";
 	get_str("请输入主题(2-15字，无空格）：", talk->title, Title_Check);
-	get_str("请输入内容（2-50字）", talk->content, Address_Check);//偷懒一下
+	get_str("请输入内容（2-50字）", talk->content, Content_Check);
 	cout << "确定要发送吗？(y/n)" << endl;
 	string str;
 	getline(cin, str);
@@ -128,7 +130,7 @@ void show_communications(mapfile& maps, System_status& status)
 	it = maps.cur_usr_tid2Talk.begin();
 	itEnd = maps.cur_usr_tid2Talk.end();
 	cout << "*******收件箱*******" << endl;
-	cout << " ID    状态   日期    发件人    主题" << endl;
+	cout << " ID     状态           日期           发件人            主题" << endl;
 	while (it != itEnd) {
 		++idcount;
 		if (it->second->status == -1) {
@@ -168,11 +170,52 @@ void see_communication_content(mapfile& maps, System_status& status)
 		else
 			cout << "发件人：" << maps.uid2usr[l_it->second->sid]->username << endl;
 		cout << "主题：" << l_it->second->title << endl;
-		cout << "内容：" << l_it->second->content << endl;
+		cout << "内容：" << MyMarkdown_translation(l_it->second->content) << endl;
 		if (l_it->second->status != 2)
 			l_it->second->status = 0;
+		rewrite_talk_file(maps, status);
 	}
-	Press_Enter_to_Continue();
+	int move = get_num("1.星标邮件 2.快速回复 其他数字：退出详情页面");
+	if (move == 1) {
+		if (l_it->second->status != 2) {
+			l_it->second->status = 2;
+			rewrite_talk_file(maps, status);
+		}
+		else
+			cout << "已是星标邮件。" << endl;
+		Sleep(1500);
+	}
+	if (move == 2) {
+		Talk* talk = new Talk;
+		talk->sid = status.uid;
+		talk->date = getDate();
+		talk->title = "re:" + l_it->second->title;
+		int id = l_it->second->sid;
+		string path_prefix = ".\\database\\communication\\";
+		string path = "";
+		path = path_prefix + to_string(id) + ".txt";
+		get_str("请输入内容（2-50字）", talk->content, Content_Check);
+		cout << "确定要发送吗？(y/n)" << endl;
+		string str;
+		getline(cin, str);
+		while (str != "y" && str != "n" && str != "Y" && str != "N") {
+			cout << "请输入y/n" << endl;
+			getline(cin, str);
+		}
+		if (str == "n" || str == "N")
+			return;
+		if (status.level == 3)
+			talk->status = 3;
+		else
+			talk->status = 1;
+		ofstream write;
+		write.open(path, ios::app);
+		write << setw(2) << setfill(' ') << talk->status << " " << talk->date << " "
+			<< setw(5) << setfill('0') << talk->sid << " " << talk->title << " " << talk->content << endl;
+		cout << "发送成功。" << endl;
+		Sleep(1500);
+	}
+
 }
 
 void Delete_talk(mapfile& maps, System_status& status)
@@ -188,10 +231,6 @@ void Delete_talk(mapfile& maps, System_status& status)
 	}
 	rewrite_talk_file(maps, status);
 	Sleep(1500);
-}
-
-void follow(mapfile& maps, System_status& status)
-{
 }
 
 void Star_talk(mapfile& maps, System_status& status)
@@ -210,10 +249,71 @@ void Star_talk(mapfile& maps, System_status& status)
 			cout << "已去星标。" << endl;
 		}
 		rewrite_talk_file(maps, status);
-		Sleep(1500);
 	}
+	Sleep(1500);
 }
 
-void MyMarkdown_translation(string str)
+string MyMarkdown_translation(string str)
 {
+	string ret;
+	bool isRED = false;//1
+	bool isYELLOW = false;//2
+	bool isGreen = false;//3
+	bool isUnder = false;//4
+	int status = 0;
+	subreplace(str, "\\n", "\n");
+	subreplace(str, "[Y]", "\2");
+	subreplace(str, "[R]", "\1");
+	subreplace(str, "[G]", "\3");
+	subreplace(str, "[U]", "\033[0m");
+	subreplace(str, "<u>", "\4");
+	subreplace(str, "</u>", "\033[0m");
+	for (unsigned int i = 0; i < str.length(); ++i) {
+		if (str[i] == '\1') {
+			if (!isRED)
+				ret += "\033[31m";
+			else
+				ret += "\033[0m";
+			isRED = !isRED;
+		}
+		else if (str[i] == '\2') {
+			if (!isYELLOW)
+				ret += "\033[33m";
+			else
+				ret += "\033[0m";
+			isYELLOW = !isYELLOW;
+		}
+		else if (str[i] == '\3') {
+			if (!isGreen)
+				ret += "\033[32m";
+			else
+				ret += "\033[0m";
+			isGreen = !isGreen;
+		}
+		else if (str[i] == '\4') {
+			if (!isUnder)
+				ret += "\033[4m";
+			else
+				ret += "\033[0m";
+			isUnder = !isUnder;
+		}
+		else 
+			ret += str[i];
+	}
+	ret += "\033[0m";
+	return ret;
+}
+
+string giveChange(bool isRED, bool isYELLOW, bool isGreen, bool isUnder)
+{
+	string ret = "\033[0m";
+	if (isRED)
+		ret += "\033[3m";
+	if (isYELLOW)
+		ret += "\033[1m";
+	if (isGreen)
+		ret += "\033[9m";
+	if (isUnder)
+		ret += "\033[4m";
+	return ret;
 }
